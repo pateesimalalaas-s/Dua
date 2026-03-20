@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For My Moon - Chand Raat</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Poppins:wght@300;600&display=swap');
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: radial-gradient(circle at center, #2c023d 0%, #000000 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            perspective: 1200px;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        /* Stars & Hearts Canvas */
+        #canvas {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* 3D Glass Bubble */
+        #bubble {
+            width: 200px;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            box-shadow: 0 0 50px rgba(255, 20, 147, 0.2), inset 0 0 20px rgba(255,255,255,0.1);
+            color: #ffd700;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            font-size: 0.8rem;
+            text-align: center;
+            transition: 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+            animation: float3D 5s ease-in-out infinite;
+        }
+
+        #bubble:hover {
+            transform: scale(1.1) rotateY(10deg);
+            background: rgba(255, 20, 147, 0.1);
+            border-color: #ff1493;
+            box-shadow: 0 0 40px rgba(255, 20, 147, 0.5);
+        }
+
+        @keyframes float3D {
+            0%, 100% { transform: translateY(0) rotateX(0) rotateY(0); }
+            33% { transform: translateY(-20px) rotateX(5deg) rotateY(-5deg); }
+            66% { transform: translateY(10px) rotateX(-5deg) rotateY(5deg); }
+        }
+
+        /* Content Container */
+        #content {
+            display: none;
+            text-align: center;
+            transform-style: preserve-3d;
+            animation: fadeIn 2s forwards;
+        }
+
+        .moon-frame {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin: 0 auto;
+            transform: translateZ(80px);
+            border-radius: 50%;
+            padding: 10px;
+            background: linear-gradient(45deg, #ffd700, #ff1493);
+            box-shadow: 0 0 80px rgba(255, 20, 147, 0.4);
+        }
+
+        .moon-pic {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover; /* GF ki pic crop nahi hogi agar frame square hai, warna 'contain' use karen */
+            border: 4px solid #fff;
+            background: #000;
+        }
+
+        .message {
+            margin-top: 40px;
+            color: #fff;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: slideUp 1.5s forwards 1s;
+        }
+
+        .message h1 {
+            font-family: 'Dancing Script', cursive;
+            font-size: 3.5rem;
+            margin: 0;
+            background: linear-gradient(to right, #fff, #ffd700, #ff1493);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 10px 20px rgba(0,0,0,0.5);
+        }
+
+        .heart-particle {
+            position: absolute;
+            color: #ff1493;
+            font-size: 20px;
+            user-select: none;
+            pointer-events: none;
+            animation: fall linear forwards;
+        }
+
+        @keyframes fall {
+            to { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+        }
+
+        @keyframes slideUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="canvas"></canvas>
+
+    <audio id="bgMusic" loop>
+        <source src="https://files.catbox.moe/cpgtyg.mp3" type="audio/mpeg">
+    </audio>
+
+    <div id="bubble" onclick="revealMagic()">
+        <div>Tap to find<br>the Real Moon</div>
+    </div>
+
+    <div id="content">
+        <div class="moon-frame">
+            <img src="https://i.ibb.co/ymP7Hjt3/20260320-202925-COLLAGE.jpg" alt="My Moon" class="moon-pic">
+        </div>
+        <div class="message">
+            <h1>I Found My Moon...</h1>
+            <p style="font-size: 1.4rem; color: #ffd700; letter-spacing: 2px;">CHAND RAAT MUBARAK, JAAN! ❤️</p>
+        </div>
+    </div>
+
+    <script>
+        // Hearts Animation Logic
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.classList.add('heart-particle');
+            heart.innerHTML = ['❤️', '💖', '✨', '🌸'][Math.floor(Math.random() * 4)];
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.animationDuration = (Math.random() * 3 + 2) + 's';
+            heart.style.opacity = Math.random();
+            heart.style.fontSize = (Math.random() * 20 + 10) + 'px';
+            
+            document.body.appendChild(heart);
+            
+            setTimeout(() => {
+                heart.remove();
+            }, 5000);
+        }
+
+        function revealMagic() {
+            const bubble = document.getElementById('bubble');
+            const content = document.getElementById('content');
+            const music = document.getElementById('bgMusic');
+            
+            // Music Play
+            music.play().catch(e => console.log("Music play blocked by browser settings."));
+
+            // Heart Rain Start
+            setInterval(createHeart, 200);
+
+            // Hide Bubble & Show Content
+            bubble.style.opacity = '0';
+            bubble.style.transform = 'scale(0) rotateY(180deg)';
+            
+            setTimeout(() => {
+                bubble.style.display = 'none';
+                content.style.display = 'block';
+            }, 800);
+        }
+
+        // Stars Background
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        const stars = [];
+
+        for(let i=0; i<200; i++) {
+            stars.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                size: Math.random() * 1.5,
+                speed: Math.random() * 0.5
+            });
+        }
+
+        function drawStars() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#fff';
+            stars.forEach(s => {
+                ctx.beginPath();
+                ctx.arc(s.x, s.y, s.size, 0, Math.PI*2);
+                ctx.fill();
+                s.y += s.speed;
+                if(s.y > canvas.height) s.y = 0;
+            });
+            requestAnimationFrame(drawStars);
+        }
+        drawStars();
+    </script>
+</body>
+</html>
